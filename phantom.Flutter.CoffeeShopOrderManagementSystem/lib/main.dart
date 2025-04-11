@@ -1,4 +1,5 @@
 import 'package:coffeeshopordermanagementsystem/dataentities.dart';
+import 'package:coffeeshopordermanagementsystem/products.dart';
 import 'package:coffeeshopordermanagementsystem/tables.dart';
 import 'package:flutter/material.dart';
 
@@ -56,18 +57,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   ShopTable? selectedItem;
 
-  void _incrementCounter() {
+  void _showTables() {
     List<ShopTable> items = [
-      ShopTable(id: '1', name: 'Table 1'),
-      ShopTable(id: '2', name: 'Table 2'),
-      ShopTable(id: '3', name: 'Table 3'),
+      ShopTable(id: 1, name: 'Table 1'),
+      ShopTable(id: 2, name: 'Table 2'),
+      ShopTable(id: 3, name: 'Table 3'),
     ];
     showDialog(
       context: context,
       builder: (context) => TableSelectionDialog(items: items),
+    ).then((selectedItem) {
+      if (selectedItem != null) {
+        setState(() {
+          this.selectedItem = selectedItem;
+        });
+      }
+    });
+  }
+
+  void _showProducts() {
+    List<Product> items = [
+      Product(id: 1, name: 'Espresso', price: 30000),
+      Product(id: 2, name: 'Cappuccino', price: 35000),
+      Product(id: 3, name: 'Latte', price: 40000),
+      Product(id: 4, name: 'Americano', price: 25000),
+      Product(id: 5, name: 'Mocha', price: 45000),
+      Product(id: 6, name: 'Macchiato', price: 38000),
+      Product(id: 7, name: 'Flat White', price: 37000),
+      Product(id: 8, name: 'Affogato', price: 42000),
+      Product(id: 9, name: 'Cold Brew', price: 32000),
+      Product(id: 10, name: 'Iced Coffee', price: 28000),
+    ];
+    showDialog(
+      context: context,
+      builder: (context) => ProductSelectionDialog(items: items),
     ).then((selectedItem) {
       if (selectedItem != null) {
         setState(() {
@@ -122,11 +147,45 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.select_all),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book),
+            label: 'Menu',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Table',
+          ),
+        ],
+        currentIndex: 0, // Set the current selected index
+        selectedItemColor: Colors.deepPurple,
+        onTap: (int index) {
+          // Handle button tap
+          switch (index) {
+            case 0:
+              // Navigate to Home
+              break;
+            case 1:
+              // Navigate to Menu
+              _showProducts();
+              break;
+            case 2:
+              // Navigate to Tables
+              _showTables();
+              break;
+          }
+        },
+      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _showTables,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.select_all),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

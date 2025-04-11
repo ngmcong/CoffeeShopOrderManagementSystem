@@ -1,5 +1,5 @@
 class Product {
-  final String id;
+  final int id;
   final String name;
   final double price;
 
@@ -7,7 +7,7 @@ class Product {
 }
 
 class ShopTable {
-  final String id;
+  final int id;
   final String name;
 
   ShopTable({required this.id, required this.name});

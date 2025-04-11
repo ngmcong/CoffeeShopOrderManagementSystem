@@ -23,15 +23,60 @@ class ProductSelectionDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView.builder(
+              child: GridView.builder(
                 shrinkWrap: true,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                ),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(items[index].name),
+                  return GestureDetector(
                     onTap: () {
                       Navigator.pop(context, items[index]);
                     },
+                    child: Card(
+                      elevation: 2,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Image.network(
+                              'https://down-yuantu.pngtree.com/element_our/bg/20190918/bg/334c63fe8c4ba.png?e=1744386209&st=ZGYxZTJiYzk2ZTYyZjJjZTk3YjYzOGFjMzM1OTI2ZmI&n=—Pngtree—flying+cup+of+coffee+with_5057949.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Center(
+                            child: Container(
+                              color: Colors.black.withOpacity(0.5),
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    items[index].name,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '\$${items[index].price.toStringAsFixed(2)}',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),

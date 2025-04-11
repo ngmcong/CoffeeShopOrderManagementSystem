@@ -2,6 +2,8 @@ class Product {
   final int id;
   final String name;
   final double price;
+  int qty = 1;
+  double get total => price * qty;
 
   Product({required this.id, required this.name, required this.price});
 }

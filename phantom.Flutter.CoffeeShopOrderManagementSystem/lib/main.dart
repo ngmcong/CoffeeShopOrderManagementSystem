@@ -96,11 +96,27 @@ class _MyHomePageState extends State<MyHomePage> {
     ).then((selectedItem) {
       if (selectedItem != null) {
         setState(() {
-          this.selectedItem = selectedItem;
+          Product product = selectedItem;
+          setState(() {
+            if (products.any((p) => p.id == product.id)) {
+              // If the product already exists, increase its quantity
+              products.firstWhere((p) => p.id == product.id).qty++;
+            } else {
+              products.add(selectedItem);
+            }
+          });
         });
       }
     });
   }
+
+  List<Product> products = [
+    Product(id: 1, name: 'Espresso', price: 30000),
+    Product(id: 2, name: 'Cappuccino', price: 35000),
+    Product(id: 3, name: 'Latte', price: 40000),
+    Product(id: 4, name: 'Americano', price: 25000),
+    Product(id: 5, name: 'Mocha', price: 45000),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +155,45 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3, // Number of columns
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                ),
+                itemCount: products.length, // Number of products
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  return Card(
+                    elevation: 4,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(product.name,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Text('Price: ${product.price} VND'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text('Qty: ${product.qty}',
+                                style: const TextStyle(fontSize: 14)),
+                            Text('Amount: ${product.qty * product.price} VND',
+                                style: const TextStyle(fontSize: 14)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            Text(
+              'Total Amount: ${products.fold<int>(0, (sum, product) => sum + (product.price.toInt() * product.qty))} VND',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             Text(
               selectedItem?.name ?? 'No table selected',
               style: Theme.of(context).textTheme.headlineMedium,

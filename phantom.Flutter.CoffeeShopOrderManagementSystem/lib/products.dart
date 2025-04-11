@@ -42,7 +42,7 @@ class ProductSelectionDialog extends StatelessWidget {
                         children: [
                           Positioned.fill(
                             child: Image.network(
-                              'https://down-yuantu.pngtree.com/element_our/bg/20190918/bg/334c63fe8c4ba.png?e=1744386209&st=ZGYxZTJiYzk2ZTYyZjJjZTk3YjYzOGFjMzM1OTI2ZmI&n=—Pngtree—flying+cup+of+coffee+with_5057949.png',
+                              'https://static.vecteezy.com/system/resources/thumbnails/041/643/200/small_2x/ai-generated-a-cup-of-coffee-and-a-piece-of-coffee-bean-perfect-for-food-and-beverage-related-designs-or-promoting-cozy-moments-png.png',
                               fit: BoxFit.cover,
                             ),
                           ),

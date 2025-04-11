@@ -48,7 +48,7 @@ class ProductSelectionDialog extends StatelessWidget {
                           ),
                           Center(
                             child: Container(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,

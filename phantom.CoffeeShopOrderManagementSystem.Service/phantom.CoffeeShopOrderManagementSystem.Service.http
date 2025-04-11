@@ -1,0 +1,6 @@
+@phantom.CoffeeShopOrderManagementSystem.Service_HostAddress = http://localhost:5188
+
+GET {{phantom.CoffeeShopOrderManagementSystem.Service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

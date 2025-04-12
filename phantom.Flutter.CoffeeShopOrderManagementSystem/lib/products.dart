@@ -31,23 +31,23 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
               child: GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
+                  crossAxisCount: 2,
                   crossAxisSpacing: 8.0,
                   mainAxisSpacing: 8.0,
                 ),
                 itemCount: widget.items.length,
                 itemBuilder: (context, index) {
                   return Card(
-                    // elevation: 2,
+                    elevation: 2,
                     child: Column(
-                      // mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Image.network(
-                        //   widget.items[index].imageUrl ?? demoImageUrl,
-                        //   fit: BoxFit.cover,
-                        //   height: 140,
-                        //   width: 140,
-                        // ),
+                        Image.network(
+                          widget.items[index].imageUrl ?? demoImageUrl,
+                          fit: BoxFit.cover,
+                          height: 100,
+                          width: 100,
+                        ),
                         Text(
                           widget.items[index].name,
                           textAlign: TextAlign.center,
@@ -57,7 +57,6 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.items[index].option1!
@@ -81,7 +80,6 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
                                   ))
                               .toList(),
                         ),
-                        const SizedBox(height: 4),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.items[index].prices!
@@ -107,7 +105,7 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
                                   )))
                               .toList(),
                         ),
-                        const SizedBox(height: 4),
+                        // const SizedBox(height: 4),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pop(context, widget.items[index]);

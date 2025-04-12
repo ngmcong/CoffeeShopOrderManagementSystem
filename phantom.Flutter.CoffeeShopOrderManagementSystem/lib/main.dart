@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:coffeeshopordermanagementsystem/bottomnavigationbar.dart';
 import 'package:coffeeshopordermanagementsystem/dataentities.dart';
 import 'package:coffeeshopordermanagementsystem/detail.dart';
-import 'package:coffeeshopordermanagementsystem/tables.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -86,76 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<ShopTable>? tables;
-  Future<void> _showTables() async {
-    tables ??= await _fetchShopTables();
-    if (!mounted) return; // Check if the widget is still mounted
-    showDialog(
-      context: context,
-      builder: (context) => TableSelectionDialog(items: tables!),
-    ).then((selectedItem) {
-      if (selectedItem != null) {
-        setState(() {
-          this.selectedItem = selectedItem;
-          _fetchTableProducts(selectedItem.id).then((products) {
-            setState(() {
-              tableProducts = products;
-              isEditing = false; // Reset editing state after loading products
-            });
-          });
-        });
-      }
-    });
-  }
 
   List<Product> tableProducts = [];
-
-  Future<List<Product>> _fetchTableProducts(int tableId) async {
-    final url = Uri.parse(
-        '$httpAddress/tables/loadproducts/$tableId'); // Replace with your API endpoint
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        var products =
-            await Future.wait(data.map((item) async => Product.fromJson(item)));
-        return products;
-      } else {
-        throw Exception('Failed to load products');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching products: $e');
-      }
-    }
-    return []; // Return an empty list in case of error
-  }
-
-  Future<void> _saveTableProducts() async {
-    final url = Uri.parse(
-        '$httpAddress/tables/OccupiedAndOrderning/${selectedItem!.id}'); // Replace with your API endpoint
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(
-            tableProducts.map((product) => product.toJson()).toList()),
-      );
-      if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('Table products saved successfully');
-        }
-        setState(() {
-          isEditing = false; // Reset editing state after saving
-        });
-      } else {
-        throw Exception('Failed to save table products');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error saving table products: $e');
-      }
-    }
-  }
 
   @override
   void initState() {
@@ -219,12 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     onTap: () {
                       setState(() {
                         selectedItem = table;
-                        _fetchTableProducts(table.id).then((products) {
-                          setState(() {
-                            tableProducts = products;
-                            isEditing = false; // Reset editing state
-                          });
-                        });
                       });
                     },
                     child: Card(

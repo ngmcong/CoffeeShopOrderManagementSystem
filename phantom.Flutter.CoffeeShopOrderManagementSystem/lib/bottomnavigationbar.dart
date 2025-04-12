@@ -1,5 +1,4 @@
 import 'package:coffeeshopordermanagementsystem/dataentities.dart';
-import 'package:coffeeshopordermanagementsystem/order.dart';
 import 'package:flutter/material.dart';
 
 // ignore: non_constant_identifier_names
@@ -30,12 +29,12 @@ BottomNavigationBar CustomBottomNavigationBar({bool isEnabledOrder = false}) {
           Navigator.of(rootContext!).popUntil((route) => route.isFirst);
           break;
         case 1:
-          if (!isEnabledOrder) return;
+          // if (!isEnabledOrder) return;
           // Navigate to Order
-          Navigator.push(
-            rootContext!,
-            MaterialPageRoute(builder: (context) => const Order()),
-          );
+          // Navigator.push(
+          //   rootContext!,
+          //   MaterialPageRoute(builder: (context) => const Order()),
+          // );
           break;
         case 2:
           break;

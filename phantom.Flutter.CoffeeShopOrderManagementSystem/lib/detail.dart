@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:coffeeshopordermanagementsystem/bottomnavigationbar.dart';
 import 'package:coffeeshopordermanagementsystem/dataentities.dart';
+import 'package:coffeeshopordermanagementsystem/order.dart';
 import 'package:coffeeshopordermanagementsystem/payment.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class DetailPage extends StatefulWidget {
   final ShopTable? shopTable;
@@ -17,6 +22,39 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   List<Product>? orderItems;
+
+  Future<List<Product>> _fetchTableProducts(int tableId) async {
+    final url = Uri.parse(
+        '$httpAddress/tables/loadproducts/$tableId'); // Replace with your API endpoint
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        var products =
+            await Future.wait(data.map((item) async => Product.fromJson(item)));
+        return products;
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching products: $e');
+      }
+    }
+    return []; // Return an empty list in case of error
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.shopTable != null) {
+      _fetchTableProducts(widget.shopTable!.id).then((products) {
+        setState(() {
+          orderItems = products;
+        });
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,17 +133,39 @@ class _DetailPageState extends State<DetailPage> {
         ],
       ),
       bottomNavigationBar: CustomBottomNavigationBar(isEnabledOrder: true),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const PaymentPage(),
-            ),
-          );
-        },
-        child: const Icon(Icons.payment),
+      floatingActionButton: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Order(
+                    shopTable: widget.shopTable,
+                  ),
+                ),
+              );
+            },
+            heroTag: 'order',
+            child: const Icon(Icons.menu_book),
+          ),
+          const SizedBox(width: 16.0),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PaymentPage(),
+                ),
+              );
+            },
+            heroTag: 'payment',
+            child: const Icon(Icons.payment),
+          ),
+        ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

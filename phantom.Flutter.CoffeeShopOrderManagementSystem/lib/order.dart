@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Order extends StatefulWidget {
-  const Order({super.key});
+  final ShopTable? shopTable;
+
+  const Order({super.key, this.shopTable});
 
   @override
   State<Order> createState() => _OrderState();
@@ -16,8 +18,7 @@ class Order extends StatefulWidget {
 
 class _OrderState extends State<Order> {
   Future<List<Product>?> _fetchProducts() async {
-    final url = Uri.parse(
-        '$httpAddress/products/load');
+    final url = Uri.parse('$httpAddress/products/load');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -52,7 +53,10 @@ class _OrderState extends State<Order> {
         setState(() {
           orderItems ??= [];
           Product product = selectedItem;
-          if (orderItems!.any((p) => p.id == product.id && p.option1Value == product.option1Value && p.selectedPrice?.price == product.selectedPrice?.price)) {
+          if (orderItems!.any((p) =>
+              p.id == product.id &&
+              p.option1Value == product.option1Value &&
+              p.selectedPrice?.price == product.selectedPrice?.price)) {
             // If the product already exists, increase its quantity
             orderItems!.firstWhere((p) => p.id == product.id).qty++;
           } else {
@@ -61,6 +65,30 @@ class _OrderState extends State<Order> {
         });
       }
     });
+  }
+
+  Future<void> _saveTableProducts() async {
+    final url = Uri.parse(
+        '$httpAddress/tables/OccupiedAndOrderning/${widget.shopTable!.id}'); // Replace with your API endpoint
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body:
+            jsonEncode(orderItems?.map((product) => product.toJson()).toList()),
+      );
+      if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print('Table products saved successfully');
+        }
+      } else {
+        throw Exception('Failed to save table products');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saving table products: $e');
+      }
+    }
   }
 
   @override
@@ -101,7 +129,8 @@ class _OrderState extends State<Order> {
                         const SizedBox(height: 8.0),
                         Text('Loại: ${product?.option1Value}'),
                         const SizedBox(height: 8.0),
-                        Text('Giá: ${numberFormat.format(product?.selectedPrice?.price ?? 0)}'),
+                        Text(
+                            'Giá: ${numberFormat.format(product?.selectedPrice?.price ?? 0)}'),
                         const SizedBox(height: 8.0),
                         Text('Số lượng: ${product?.qty ?? 0}'),
                         const SizedBox(height: 8.0),
@@ -129,7 +158,10 @@ class _OrderState extends State<Order> {
           ),
           const SizedBox(width: 16.0),
           FloatingActionButton(
-            onPressed: () {
+            onPressed: () async {
+              await _saveTableProducts();
+              if (!mounted) return;
+              // ignore: use_build_context_synchronously
               Navigator.of(context).pop();
             },
             heroTag: 'save_order',

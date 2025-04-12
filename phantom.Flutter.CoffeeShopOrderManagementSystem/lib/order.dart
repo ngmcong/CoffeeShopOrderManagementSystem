@@ -26,6 +26,7 @@ class _OrderState extends State<Order> {
             await Future.wait(data.map((item) async => Product.fromJson(item)));
         for (var e in products) {
           e.option1Value = e.option1?.isNotEmpty == true ? e.option1![0] : null;
+          e.selectedPrice = e.prices?.isNotEmpty == true ? e.prices![0] : null;
         }
         return products;
       } else {
@@ -51,7 +52,7 @@ class _OrderState extends State<Order> {
         setState(() {
           orderItems ??= [];
           Product product = selectedItem;
-          if (orderItems!.any((p) => p.id == product.id)) {
+          if (orderItems!.any((p) => p.id == product.id && p.option1Value == product.option1Value && p.selectedPrice?.price == product.selectedPrice?.price)) {
             // If the product already exists, increase its quantity
             orderItems!.firstWhere((p) => p.id == product.id).qty++;
           } else {
@@ -98,11 +99,14 @@ class _OrderState extends State<Order> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8.0),
-                        Text('\$${product?.price?.toStringAsFixed(2)}'),
-                        Text('Qty: ${product?.qty ?? 0}'),
+                        Text('Loại: ${product?.option1Value}'),
+                        const SizedBox(height: 8.0),
+                        Text('Giá: ${numberFormat.format(product?.selectedPrice?.price ?? 0)}'),
+                        const SizedBox(height: 8.0),
+                        Text('Số lượng: ${product?.qty ?? 0}'),
                         const SizedBox(height: 8.0),
                         Text(
-                            'Amount: \$${(product?.price ?? 0 * (product?.qty ?? 0)).toStringAsFixed(2)}'),
+                            'Tổng tiền: ${numberFormat.format(product?.selectedPrice?.price ?? 0 * (product?.qty ?? 0))}'),
                       ],
                     ),
                   );

@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 String httpAddress = "http://localhost:8001/api";
 BuildContext? rootContext;
 String demoImageUrl =
     'https://static.vecteezy.com/system/resources/thumbnails/041/643/200/small_2x/ai-generated-a-cup-of-coffee-and-a-piece-of-coffee-bean-perfect-for-food-and-beverage-related-designs-or-promoting-cozy-moments-png.png';
+var numberFormat = NumberFormat('###,###', 'en_US');
 
 class ProductPrice {
   final int id;
@@ -41,6 +43,7 @@ class Product {
   List<String>? option1;
   List<ProductPrice>? prices;
   String? option1Value;
+  ProductPrice? selectedPrice;
 
   Product({required this.id, required this.name, this.option1, required this.prices});
 

@@ -37,67 +37,92 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
                 ),
                 itemCount: widget.items.length,
                 itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context, widget.items[index]);
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Card(
-                        elevation: 2,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.network(
-                              widget.items[index].imageUrl ?? demoImageUrl,
-                              fit: BoxFit.cover,
-                              height: 260,
-                              width: 260,
-                            ),
-                            Text(
-                              widget.items[index].name,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            // Text(
-                            //   '\$${widget.items[index].price?.toStringAsFixed(2)}',
-                            //   textAlign: TextAlign.center,
-                            //   style: const TextStyle(
-                            //     fontSize: 12,
-                            //     color: Colors.white70,
-                            //   ),
-                            // ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: widget.items[index].option1!
-                                  .map((e) => Column(
-                                        children: [
-                                          Text(e),
-                                          const SizedBox(height: 4),
-                                          Radio(
-                                            value: e,
-                                            groupValue: widget
-                                                .items[index].option1Value,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                widget.items[index]
-                                                    .option1Value = value;
-                                              });
-                                            },
-                                            activeColor: Colors.deepPurple,
-                                          )
-                                        ],
-                                      ))
-                                  .toList(),
-                            ),
-                          ],
+                  return Card(
+                    elevation: 2,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.network(
+                          widget.items[index].imageUrl ?? demoImageUrl,
+                          fit: BoxFit.cover,
+                          height: 240,
+                          width: 240,
                         ),
-                      ),
+                        Text(
+                          widget.items[index].name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        // Text(
+                        //   '\$${widget.items[index].price?.toStringAsFixed(2)}',
+                        //   textAlign: TextAlign.center,
+                        //   style: const TextStyle(
+                        //     fontSize: 12,
+                        //     color: Colors.white70,
+                        //   ),
+                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: widget.items[index].option1!
+                              .map((e) => Column(
+                                    children: [
+                                      Text(e),
+                                      const SizedBox(height: 4),
+                                      Radio(
+                                        value: e,
+                                        groupValue:
+                                            widget.items[index].option1Value,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            widget.items[index].option1Value =
+                                                value;
+                                          });
+                                        },
+                                        activeColor: Colors.deepPurple,
+                                      )
+                                    ],
+                                  ))
+                              .toList(),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: widget.items[index].prices!
+                              .map((e) => Padding(
+                                  padding: const EdgeInsets.only(right: 20.0),
+                                  child: Column(
+                                    children: [
+                                      Text(numberFormat.format(e.price)),
+                                      const SizedBox(height: 4),
+                                      Radio(
+                                        value: e,
+                                        groupValue:
+                                            widget.items[index].selectedPrice,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            widget.items[index].selectedPrice =
+                                                value;
+                                          });
+                                        },
+                                        activeColor: Colors.deepPurple,
+                                      ),
+                                    ],
+                                  )))
+                              .toList(),
+                        ),
+                        const SizedBox(height: 4),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context, widget.items[index]);
+                          },
+                          child: const Text('Add'),
+                        ),
+                      ],
                     ),
                   );
                 },

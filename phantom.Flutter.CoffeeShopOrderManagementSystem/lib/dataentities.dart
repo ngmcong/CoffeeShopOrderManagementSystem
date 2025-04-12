@@ -40,6 +40,7 @@ class Product {
   String? imageUrl;
   List<String>? option1;
   List<ProductPrice>? prices;
+  String? option1Value;
 
   Product({required this.id, required this.name, this.option1, required this.prices});
 

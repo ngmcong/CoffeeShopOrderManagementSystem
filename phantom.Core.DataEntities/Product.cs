@@ -13,7 +13,7 @@
         public string? ImageUrl { get; set; }
         public short Qty { get; set; } = 0;
         public short OccupiedQty { get; set; } = 0;
-        public IEnumerable<string>? Option1 { get; set; }
+        public IEnumerable<string>? Option1 { get; set; } = new List<string> { "Mặc định" };
         public IEnumerable<ProductPrice>? Prices { get; set; }
     }
 }

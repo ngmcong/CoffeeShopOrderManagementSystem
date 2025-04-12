@@ -24,6 +24,9 @@ class _OrderState extends State<Order> {
         final List<dynamic> data = jsonDecode(response.body);
         var products =
             await Future.wait(data.map((item) async => Product.fromJson(item)));
+        for (var e in products) {
+          e.option1Value = e.option1?.isNotEmpty == true ? e.option1![0] : null;
+        }
         return products;
       } else {
         throw Exception('Failed to load products');

@@ -48,7 +48,6 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
                                       OccupiedQty = op?.OccupiedQty ?? 0,
                                       ImageUrl = p.ImageUrl,
                                       Name = p.Name,
-                                      Price = p.Price,
                                   }).ToList();
             await Task.CompletedTask;
         }

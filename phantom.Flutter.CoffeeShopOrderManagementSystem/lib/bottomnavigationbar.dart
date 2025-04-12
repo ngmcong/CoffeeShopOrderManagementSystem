@@ -3,24 +3,25 @@ import 'package:coffeeshopordermanagementsystem/order.dart';
 import 'package:flutter/material.dart';
 
 // ignore: non_constant_identifier_names
-BottomNavigationBar CustomBottomNavigationBar() {
+BottomNavigationBar CustomBottomNavigationBar({bool isEnabledOrder = false}) {
   return BottomNavigationBar(
-    items: const <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
+    items: <BottomNavigationBarItem>[
+      const BottomNavigationBarItem(
         icon: Icon(Icons.home),
         label: 'Home',
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.menu_book),
+        icon: isEnabledOrder ? const Icon(Icons.menu_book) : const Icon(Icons.menu_book, color: Colors.grey),
         label: 'Order',
       ),
-      BottomNavigationBarItem(
+      const BottomNavigationBarItem(
         icon: Icon(Icons.settings),
         label: 'Settings',
       ),
     ],
     currentIndex: 0, // Set the current selected index
     selectedItemColor: Colors.deepPurple,
+    unselectedItemColor: Colors.deepPurple,
     onTap: (int index) {
       // Handle button tap
       switch (index) {
@@ -29,6 +30,7 @@ BottomNavigationBar CustomBottomNavigationBar() {
           Navigator.of(rootContext!).popUntil((route) => route.isFirst);
           break;
         case 1:
+          if (!isEnabledOrder) return;
           // Navigate to Order
           Navigator.push(
             rootContext!,

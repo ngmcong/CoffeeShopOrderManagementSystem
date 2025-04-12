@@ -44,13 +44,13 @@ class ProductSelectionDialog extends StatelessWidget {
                           children: [
                             Positioned.fill(
                               child: Image.network(
-                                demoImageUrl,
+                                items[index].imageUrl ?? demoImageUrl,
                                 fit: BoxFit.cover,
                               ),
                             ),
                             Center(
                               child: Container(
-                                color: Colors.black.withOpacity(0.5),
+                                color: Colors.black.withValues(alpha: 0.5),
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -65,7 +65,7 @@ class ProductSelectionDialog extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '\$${items[index].price.toStringAsFixed(2)}',
+                                      '\$${items[index].price?.toStringAsFixed(2)}',
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
                                         fontSize: 12,

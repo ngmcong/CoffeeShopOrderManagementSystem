@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:coffeeshopordermanagementsystem/bottomnavigationbar.dart';
 import 'package:coffeeshopordermanagementsystem/dataentities.dart';
 import 'package:coffeeshopordermanagementsystem/products.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Order extends StatefulWidget {
   const Order({super.key});
@@ -11,45 +15,34 @@ class Order extends StatefulWidget {
 }
 
 class _OrderState extends State<Order> {
-  Future<List<Product>> _fetchProducts() async {
-    // Return a list of 20 fake products for the coffee shop
-    return List.generate(
-      20,
-      (index) => Product(
-        id: index,
-        name: 'Coffee Product $index',
-        price: (index + 1) * 2.5,
-      ),
-    );
-
-    // final url = Uri.parse(
-    //     '$httpAddress/products/load'); // Replace with your API endpoint
-    // try {
-    //   final response = await http.get(url);
-    //   if (response.statusCode == 200) {
-    //     final List<dynamic> data = jsonDecode(response.body);
-    //     var products =
-    //         await Future.wait(data.map((item) async => Product.fromJson(item)));
-    //     return products;
-    //   } else {
-    //     throw Exception('Failed to load products');
-    //   }
-    // } catch (e) {
-    //   if (kDebugMode) {
-    //     print('Error fetching products: $e');
-    //   }
-    // }
-    // return []; // Return an empty list in case of error
+  Future<List<Product>?> _fetchProducts() async {
+    final url = Uri.parse(
+        '$httpAddress/products/load');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        var products =
+            await Future.wait(data.map((item) async => Product.fromJson(item)));
+        return products;
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching products: $e');
+      }
+    }
+    return null;
   }
 
   List<Product>? orderItems;
 
   Future<void> _showProducts() async {
     var products = await _fetchProducts();
-    // Check if the widget is still mounted
     showDialog(
       context: rootContext!,
-      builder: (context) => ProductSelectionDialog(items: products),
+      builder: (context) => ProductSelectionDialog(items: products ?? []),
     ).then((selectedItem) {
       if (selectedItem != null) {
         setState(() {
@@ -102,7 +95,7 @@ class _OrderState extends State<Order> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8.0),
-                        Text('\$${product?.price.toStringAsFixed(2)}'),
+                        Text('\$${product?.price?.toStringAsFixed(2)}'),
                         Text('Qty: ${product?.qty ?? 0}'),
                         const SizedBox(height: 8.0),
                         Text(

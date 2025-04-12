@@ -52,7 +52,7 @@ class _DetailPageState extends State<DetailPage> {
           const SizedBox(height: 10),
           Text(
             orderItems != null && orderItems!.isNotEmpty
-                ? 'Total Amount: \$${orderItems!.fold(0.0, (sum, item) => sum + item.price).toStringAsFixed(2)}'
+                ? 'Total Amount: \$${orderItems!.fold(0.0, (sum, item) => sum + (item.price ?? 0)).toStringAsFixed(2)}'
                 : 'Total Amount: \$0.00',
             style: const TextStyle(fontSize: 16),
           ),
@@ -81,7 +81,7 @@ class _DetailPageState extends State<DetailPage> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                                'Price: \$${product.price.toStringAsFixed(2)}'),
+                                'Price: \$${product.price?.toStringAsFixed(2)}'),
                           ],
                         ),
                       );
@@ -94,7 +94,7 @@ class _DetailPageState extends State<DetailPage> {
                 ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(),
+      bottomNavigationBar: CustomBottomNavigationBar(isEnabledOrder: true),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(

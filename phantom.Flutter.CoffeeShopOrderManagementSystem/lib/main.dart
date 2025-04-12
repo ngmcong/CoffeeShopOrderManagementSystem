@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:coffeeshopordermanagementsystem/dataentities.dart';
 import 'package:coffeeshopordermanagementsystem/products.dart';
 import 'package:coffeeshopordermanagementsystem/tables.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -58,65 +62,135 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ShopTable? selectedItem;
+  bool isEditing = false;
 
-  void _showTables() {
-    List<ShopTable> items = [
-      ShopTable(id: 1, name: 'Table 1'),
-      ShopTable(id: 2, name: 'Table 2'),
-      ShopTable(id: 3, name: 'Table 3'),
-    ];
+  Future<List<ShopTable>> _fetchShopTables() async {
+    final url = Uri.parse('$httpAddress/tables/load'); // Replace with your API endpoint
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return await Future.wait(data.map((item) => ShopTable.fromJson(item)).toList());
+      } else {
+        throw Exception('Failed to load shop tables');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching shop tables: $e');
+      }
+    }
+    return []; // Return an empty list in case of error
+  }
+
+  List<ShopTable>? tables;
+  Future<void> _showTables() async {
+    tables ??= await _fetchShopTables();
+    if (!mounted) return; // Check if the widget is still mounted
     showDialog(
       context: context,
-      builder: (context) => TableSelectionDialog(items: items),
+      builder: (context) => TableSelectionDialog(items: tables!),
     ).then((selectedItem) {
       if (selectedItem != null) {
         setState(() {
           this.selectedItem = selectedItem;
-        });
-      }
-    });
-  }
-
-  void _showProducts() {
-    List<Product> items = [
-      Product(id: 1, name: 'Espresso', price: 30000),
-      Product(id: 2, name: 'Cappuccino', price: 35000),
-      Product(id: 3, name: 'Latte', price: 40000),
-      Product(id: 4, name: 'Americano', price: 25000),
-      Product(id: 5, name: 'Mocha', price: 45000),
-      Product(id: 6, name: 'Macchiato', price: 38000),
-      Product(id: 7, name: 'Flat White', price: 37000),
-      Product(id: 8, name: 'Affogato', price: 42000),
-      Product(id: 9, name: 'Cold Brew', price: 32000),
-      Product(id: 10, name: 'Iced Coffee', price: 28000),
-    ];
-    showDialog(
-      context: context,
-      builder: (context) => ProductSelectionDialog(items: items),
-    ).then((selectedItem) {
-      if (selectedItem != null) {
-        setState(() {
-          Product product = selectedItem;
-          setState(() {
-            if (products.any((p) => p.id == product.id)) {
-              // If the product already exists, increase its quantity
-              products.firstWhere((p) => p.id == product.id).qty++;
-            } else {
-              products.add(selectedItem);
-            }
+          _fetchTableProducts(selectedItem.id).then((products) {
+            setState(() {
+              tableProducts = products;
+              isEditing = false; // Reset editing state after loading products
+            });
           });
         });
       }
     });
   }
 
-  List<Product> products = [
-    Product(id: 1, name: 'Espresso', price: 30000),
-    Product(id: 2, name: 'Cappuccino', price: 35000),
-    Product(id: 3, name: 'Latte', price: 40000),
-    Product(id: 4, name: 'Americano', price: 25000),
-    Product(id: 5, name: 'Mocha', price: 45000),
-  ];
+  Future<List<Product>> _fetchProducts() async {
+    final url = Uri.parse('$httpAddress/products/load'); // Replace with your API endpoint
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        var products = await Future.wait(data.map((item) async => Product.fromJson(item)));
+        return products;
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching products: $e');
+      }
+    }
+    return []; // Return an empty list in case of error
+  }
+
+  List<Product>? menuItems;
+  Future<void> _showProducts() async {
+    menuItems ??= await _fetchProducts();
+    if (!mounted) return; // Check if the widget is still mounted
+    showDialog(
+      context: context,
+      builder: (context) => ProductSelectionDialog(items: menuItems!),
+    ).then((selectedItem) {
+      if (selectedItem != null) {
+        setState(() {
+          Product product = selectedItem;
+          if (tableProducts.any((p) => p.id == product.id)) {
+            // If the product already exists, increase its quantity
+            tableProducts.firstWhere((p) => p.id == product.id).qty++;
+          } else {
+            tableProducts.add(selectedItem);
+          }
+          isEditing = true; // Set editing state to true when adding a product
+        });
+      }
+    });
+  }
+
+  List<Product> tableProducts = [];
+
+  Future<List<Product>> _fetchTableProducts(int tableId) async {
+    final url = Uri.parse('$httpAddress/tables/loadproducts/$tableId'); // Replace with your API endpoint
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        var products = await Future.wait(data.map((item) async => Product.fromJson(item)));
+        return products;
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching products: $e');
+      }
+    }
+    return []; // Return an empty list in case of error
+  }
+
+  Future<void> _saveTableProducts() async {
+    final url = Uri.parse('$httpAddress/tables/OccupiedAndOrderning/${selectedItem!.id}'); // Replace with your API endpoint
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(tableProducts.map((product) => product.toJson()).toList()),
+      );
+      if (response.statusCode == 200) {
+      if (kDebugMode) {
+        print('Table products saved successfully');
+      }
+      setState(() {
+        isEditing = false; // Reset editing state after saving
+      });
+      } else {
+      throw Exception('Failed to save table products');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+      print('Error saving table products: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,9 +236,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
                 ),
-                itemCount: products.length, // Number of products
+                itemCount: tableProducts.length, // Number of products
                 itemBuilder: (context, index) {
-                  final product = products[index];
+                  final product = tableProducts[index];
                   return Card(
                     elevation: 4,
                     child: Column(
@@ -191,7 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Text(
-              'Total Amount: ${products.fold<int>(0, (sum, product) => sum + (product.price.toInt() * product.qty))} VND',
+              'Total Amount: ${tableProducts.fold<int>(0, (sum, product) => sum + (product.price.toInt() * product.qty))} VND',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             Text(
@@ -202,16 +276,16 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: isEditing ? const Icon(Icons.save) : const Icon(Icons.save, color: Colors.grey),
+            label: 'Save',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.menu_book),
             label: 'Menu',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Table',
           ),
@@ -222,7 +296,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // Handle button tap
           switch (index) {
             case 0:
+              if (!isEditing) return; // Do nothing if not in editing mode
               // Navigate to Home
+              _saveTableProducts();
               break;
             case 1:
               // Navigate to Menu

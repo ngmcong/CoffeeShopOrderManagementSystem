@@ -5,27 +5,24 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class TablesController : ControllerBase
+    public class ProductsController : ControllerBase
     {
-        public static List<ShopTable> tables = new List<ShopTable>();
-        public async Task<IEnumerable<ShopTable>> Load()
+        public static List<Product> products = new List<Product>();
+        public async Task<IEnumerable<Product>> Load()
         {
-            tables = new List<ShopTable>();
-            for (short i = 1; i <= 10; i++)
+            products = new List<Product>();
+            for (short i = 1; i <= 12; i++)
             {
-                tables.Add(new ShopTable { Id = Convert.ToInt16(i - 1), Name = $"Table {i}" });
+                products.Add(new Product
+                {
+                    Id = Convert.ToInt16(i - 1),
+                    Name = $"Product {i}",
+                    Price = 35000,
+                    ImageUrl = "https://static.vecteezy.com/system/resources/thumbnails/041/643/200/small_2x/ai-generated-a-cup-of-coffee-and-a-piece-of-coffee-bean-perfect-for-food-and-beverage-related-designs-or-promoting-cozy-moments-png.png",
+                });
             }
             await Task.CompletedTask;
-            return tables;
-        }
-
-        public async void OccupiedAndOrderning(short tableId)
-        {
-            var table = tables!.FirstOrDefault(t => t.Id == tableId)!;
-            table.Status = ShopTableStatus.Orderning;
-            table.Order = Convert.ToInt16(tables.Max(t => t.Order) + 1);
-            tables.Where(t => t.Status == ShopTableStatus.Orderning).OrderBy(t => t.Order).Select((t, i) => t.Order = Convert.ToInt16(i + 1)).ToList();
-            await Task.CompletedTask;
+            return products;
         }
     }
 }

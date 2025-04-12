@@ -157,20 +157,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  List<ShopTable> generateShopTables() {
-    return List.generate(
-      20,
-      (index) => ShopTable(
-        id: index + 1,
-        name: 'Table ${index + 1}',
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
-    tables = generateShopTables(); // Initialize the list of tables
+    _fetchShopTables().then((value) {
+      setState(() {
+        tables = value;
+      });
+    });
   }
 
   @override

@@ -23,7 +23,7 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Select an Item',
+              'Chọn món',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -31,23 +31,23 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
               child: GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                  crossAxisCount: 1,
                   crossAxisSpacing: 8.0,
                   mainAxisSpacing: 8.0,
                 ),
                 itemCount: widget.items.length,
                 itemBuilder: (context, index) {
                   return Card(
-                    elevation: 2,
+                    // elevation: 2,
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      // mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.network(
-                          widget.items[index].imageUrl ?? demoImageUrl,
-                          fit: BoxFit.cover,
-                          height: 240,
-                          width: 240,
-                        ),
+                        // Image.network(
+                        //   widget.items[index].imageUrl ?? demoImageUrl,
+                        //   fit: BoxFit.cover,
+                        //   height: 140,
+                        //   width: 140,
+                        // ),
                         Text(
                           widget.items[index].name,
                           textAlign: TextAlign.center,
@@ -58,14 +58,6 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        // Text(
-                        //   '\$${widget.items[index].price?.toStringAsFixed(2)}',
-                        //   textAlign: TextAlign.center,
-                        //   style: const TextStyle(
-                        //     fontSize: 12,
-                        //     color: Colors.white70,
-                        //   ),
-                        // ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.items[index].option1!

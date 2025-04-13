@@ -15,7 +15,7 @@
         public OrderStatus Status { get; set; } = OrderStatus.New;
         public short TableId { get; set; } = 0;
         public DateTime? Date;
-        public List<Product>? Products;
+        public List<Product>? Products { get; set; }
         public string? SessionId;
         public string? TableName { get; set; }
     }

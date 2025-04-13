@@ -30,5 +30,6 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
                 return restfulHelper!;
             }
         }
+        public static MainWindow? MainWindow;
     }
 }

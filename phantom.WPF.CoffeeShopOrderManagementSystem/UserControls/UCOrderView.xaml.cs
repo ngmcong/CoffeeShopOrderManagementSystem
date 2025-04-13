@@ -55,6 +55,7 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem.UserControls
 
         public void OnOrderClicked(Order order)
         {
+            Globals.MainWindow!.MainContentControl = new UCProgressOrder(order: order);
         }
     }
 

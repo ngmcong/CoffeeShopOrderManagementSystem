@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.ComponentModel;
+using System.Configuration;
 using System.Windows;
 using Microsoft.AspNetCore.SignalR.Client;
 using phantom.WPF.CoffeeShopOrderManagementSystem.UserControls;
@@ -8,10 +9,23 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
+        internal void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
         private HubConnection? _connection;
-        public System.Windows.Controls.UserControl MainContentControl { get; set; }
+        private System.Windows.Controls.UserControl? _mainContentControl;
+        public System.Windows.Controls.UserControl? MainContentControl
+        {
+            get => _mainContentControl; set
+            {
+                _mainContentControl = value;
+                OnPropertyChanged(nameof(MainContentControl));
+            }
+        }
 
         private async Task ConnectAsync()
         {
@@ -83,6 +97,7 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
             InitializeComponent();
             this.DataContext = this;
             InitializeSignalR();
+            Globals.MainWindow = this;
             MainContentControl = new UCOrderView();
             (MainContentControl.DataContext! as UCOrderViewModel)!.Initialize();
         }

@@ -1,4 +1,5 @@
 import 'package:coffeeshopordermanagementsystem/dataentities.dart';
+import 'package:coffeeshopordermanagementsystem/main.dart';
 import 'package:flutter/material.dart';
 
 // ignore: non_constant_identifier_names
@@ -27,7 +28,8 @@ BottomNavigationBar CustomBottomNavigationBar({bool isEnabledOrder = false}) {
       switch (index) {
         case 0:
           // Navigate to Home
-          Navigator.of(rootContext!).popUntil((route) => route.isFirst);
+          // Navigator.of(rootContext!).popUntil((route) => route.isFirst);
+          GoHomePage();
           break;
         case 1:
           // if (!isEnabledOrder) return;

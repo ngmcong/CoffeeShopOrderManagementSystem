@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orangeAccent),
       ),
-      home: const MyHomePage(title: 'COFFEE SHOP ORDER MANAGEMENT SYSTEM'),
+      home: MyHomePage(title: title),
     );
   }
 }

@@ -1,15 +1,20 @@
+import 'dart:convert';
+
 import 'package:coffeeshopordermanagementsystem/dataentities.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({super.key});
+  final ShopTable? shopTable;
+  const PaymentPage({super.key, required this.shopTable});
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  String _selectedPaymentMethod = 'Credit Card';
+  String _selectedPaymentMethod = 'Tiền mặt';
 
   void _onPaymentMethodChanged(String? value) {
     setState(() {
@@ -17,15 +22,33 @@ class _PaymentPageState extends State<PaymentPage> {
     });
   }
 
-  void _processPayment() {
-    // Add payment processing logic here
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text('Payment processed using $_selectedPaymentMethod')),
-    );
-
-    // Navigate to Home
-    Navigator.of(rootContext!).popUntil((route) => route.isFirst);
+  Future<void> _processPayment() async {
+    final url = Uri.parse(
+        '$httpAddress/tables/payment/${widget.shopTable!.id}'); // Replace with your API endpoint
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(employeeName),
+      );
+      if (response.statusCode == 200) {
+        var responseBody = APIRetVal.fromJson(jsonDecode(response.body));
+        if (kDebugMode && responseBody.code == 0) {
+          if (kDebugMode) {
+            print('Table products saved successfully');
+          }
+        }
+        if (responseBody.code != 0) throw Exception(responseBody.message);
+        GoHomePage();
+      } else {
+        throw Exception('Failed to save table products');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment processed error: $e')),
+      );
+    }
   }
 
   @override

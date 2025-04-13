@@ -173,7 +173,7 @@ class _DetailPageState extends State<DetailPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const PaymentPage(),
+                  builder: (context) => PaymentPage(shopTable: widget.shopTable),
                 ),
               );
             },

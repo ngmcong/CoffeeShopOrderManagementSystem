@@ -16,6 +16,7 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
 
         private static List<ShopTable> _tables = new List<ShopTable>();
         private static List<Order> _orders = new List<Order>();
+        private static List<Payment> _payment = new List<Payment>();
 
         public async Task<IEnumerable<ShopTable>> Load()
         {
@@ -125,6 +126,44 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             await _hubContext.Clients.All.SendAsync("ReceiveMessage", "User", "Đã có cập nhật đặt món");
 
             return new APIRetVal();
+        }
+
+        [HttpPost("{tableId}")]
+        public async Task<APIRetVal> Payment(short tableId, [FromBody] string employee)
+        {
+            var table = _tables.FirstOrDefault(x => x.Id == tableId && x.Status != ShopTableStatus.Available);
+            if (table == null) return new APIRetVal { Code = 1, Message = "Không tìm thấy dữ liệu thanh toán." };
+            var orders = _orders.Where(x => x.SessionId == table.SessionId);
+            if ((orders?.Count() > 0) == false || orders.Any(x => x.Status != OrderStatus.Done)) return new APIRetVal { Code = 1, Message = "Tồn tại món chưa được giao." };
+
+            lock (orders)
+                lock (_payment)
+                {
+                    _payment.Add(new DataEntities.Payment
+                    {
+                        Id = _payment?.Count > 0 ? _payment.Max(x => x.Id) + 1 : 1,
+                        SessionId = table.SessionId,
+                        TableId = table.Id,
+                        Amount = orders.Where(x => x.SessionId == table.SessionId).SelectMany(x => x.Products!).Sum(x => x.Qty * x.SelectedPrice!.Price),
+                    });
+                }
+            table.SessionId = null;
+            table.Status = ShopTableStatus.Available;
+
+            await Task.CompletedTask;
+            return new APIRetVal();
+        }
+
+        [HttpGet("{orderId}")]
+        public async Task CompleteOrder(int orderId)
+        {
+            lock (_orders)
+            {
+                var order = _orders.FirstOrDefault(x => x.Id == orderId && x.Status != OrderStatus.Done);
+                if (order == null) throw new Exception("Không tìm thấy dữ liệu thực hiện.");
+                order.Status = OrderStatus.Done;
+            }
+            await Task.CompletedTask;
         }
     }
     public class APIRetVal

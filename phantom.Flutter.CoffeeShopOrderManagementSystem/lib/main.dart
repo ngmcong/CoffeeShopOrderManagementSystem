@@ -138,12 +138,12 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(8.0),
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3, // Number of columns
-                    crossAxisSpacing: 20.0,
-                    mainAxisSpacing: 20.0,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
                   ),
                   itemCount: tables?.length ?? 0, // Number of tables
                   itemBuilder: (context, index) {
@@ -156,6 +156,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       child: Card(
                         elevation: 4,
+                        // Optional: Subtle background color
+                        color: const Color(
+                            0xFFF5F0E7), // Example - adjust as needed
                         child: InkWell(
                           onTap: () {
                             setState(() {
@@ -173,16 +176,20 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               Text(table.name,
                                   style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold)),
+                                      fontFamily: 'PlayfairDisplay',
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF4A3B31))),
                               const SizedBox(height: 8),
                               Text(
                                 'TT: ${table.status == ShopTableStatus.available ? 'Trống' : 'Đang sử dụng'}',
                                 style: TextStyle(
+                                  fontFamily: 'NunitoSans',
+                                  fontSize: 12,
                                   color:
                                       table.status == ShopTableStatus.available
-                                          ? Colors.green
-                                          : Colors.red,
+                                          ? Color(0xFF776655)
+                                          : Color(0xFFA0522D),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

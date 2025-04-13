@@ -44,9 +44,7 @@ class _DetailPageState extends State<DetailPage> {
     return []; // Return an empty list in case of error
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void _loadProducts() {
     if (widget.shopTable != null) {
       _fetchTableProducts(widget.shopTable!.id).then((products) {
         setState(() {
@@ -54,6 +52,12 @@ class _DetailPageState extends State<DetailPage> {
         });
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
   }
 
   @override
@@ -83,15 +87,15 @@ class _DetailPageState extends State<DetailPage> {
           const SizedBox(height: 10),
           Text(
             orderItems != null && orderItems!.isNotEmpty
-                ? 'Total Quantity: ${orderItems!.length}'
+                ? 'Total Quantity: ${orderItems!.fold(0.0, (sum, item) => sum + item.qty).toStringAsFixed(0)}'
                 : 'Total Quantity: 0',
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
           Text(
             orderItems != null && orderItems!.isNotEmpty
-                ? 'Total Amount: \$${orderItems!.fold(0.0, (sum, item) => sum + (item.price ?? 0)).toStringAsFixed(2)}'
-                : 'Total Amount: \$0.00',
+                ? 'Total Amount: ${numberFormat.format(orderItems!.fold(0.0, (sum, item) => sum + (item.qty * (item.selectedPrice?.price ?? 0))))} VNĐ'
+                : 'Total Amount: 0 VNĐ',
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
@@ -112,14 +116,23 @@ class _DetailPageState extends State<DetailPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            Image.network(
+                              product.imageUrl ?? demoImageUrl,
+                              height: 100,
+                              width: 100,
+                            ),
                             Text(
                               product.name,
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
+                            Text('Loại: ${product.option1Value ?? 'Unknown'}'),
+                            const SizedBox(height: 8),
+                            Text('Số lượng: ${product.qty}'),
+                            const SizedBox(height: 8),
                             Text(
-                                'Price: \$${product.price?.toStringAsFixed(2)}'),
+                                'Price: ${numberFormat.format(product.selectedPrice?.price)} VNĐ'),
                           ],
                         ),
                       );
@@ -143,6 +156,9 @@ class _DetailPageState extends State<DetailPage> {
                 MaterialPageRoute(
                   builder: (context) => Order(
                     shopTable: widget.shopTable,
+                    onCompleted: () {
+                      _loadProducts();
+                    },
                   ),
                 ),
               );

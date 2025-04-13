@@ -9,8 +9,9 @@ import 'package:http/http.dart' as http;
 
 class Order extends StatefulWidget {
   final ShopTable? shopTable;
+  final void Function() onCompleted;
 
-  const Order({super.key, this.shopTable});
+  const Order({super.key, this.shopTable, required this.onCompleted});
 
   @override
   State<Order> createState() => _OrderState();
@@ -53,6 +54,9 @@ class _OrderState extends State<Order> {
         setState(() {
           orderItems ??= [];
           Product product = selectedItem;
+          if (product.qty == 0) {
+            product.qty = 1;
+          }
           if (orderItems!.any((p) =>
               p.id == product.id &&
               p.option1Value == product.option1Value &&
@@ -69,7 +73,7 @@ class _OrderState extends State<Order> {
 
   Future<void> _saveTableProducts() async {
     final url = Uri.parse(
-        '$httpAddress/tables/OccupiedAndOrderning/${widget.shopTable!.id}'); // Replace with your API endpoint
+        '$httpAddress/tables/OccupiedAndOrderning/${widget.shopTable!.id}?employee=$employeeName'); // Replace with your API endpoint
     try {
       final response = await http.post(
         url,
@@ -78,16 +82,18 @@ class _OrderState extends State<Order> {
             jsonEncode(orderItems?.map((product) => product.toJson()).toList()),
       );
       if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('Table products saved successfully');
+        var responseBody = APIRetVal.fromJson(jsonDecode(response.body));
+        if (kDebugMode && responseBody.code == 0) {
+          if (kDebugMode) {
+            print('Table products saved successfully');
+          }
         }
+        if (responseBody.code != 0) throw Exception(responseBody.message);
       } else {
         throw Exception('Failed to save table products');
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error saving table products: $e');
-      }
+      rethrow;
     }
   }
 
@@ -132,7 +138,31 @@ class _OrderState extends State<Order> {
                         Text(
                             'Giá: ${numberFormat.format(product?.selectedPrice?.price ?? 0)}'),
                         const SizedBox(height: 8.0),
-                        Text('Số lượng: ${product?.qty ?? 0}'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Số lượng: '),
+                            IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed: () {
+                                setState(() {
+                                  if (product!.qty > 1) {
+                                    product.qty--;
+                                  }
+                                });
+                              },
+                            ),
+                            Text('${product?.qty ?? 0}'),
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () {
+                                setState(() {
+                                  product!.qty++;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 8.0),
                         Text(
                             'Tổng tiền: ${numberFormat.format(product?.selectedPrice?.price ?? 0 * (product?.qty ?? 0))}'),
@@ -159,10 +189,15 @@ class _OrderState extends State<Order> {
           const SizedBox(width: 16.0),
           FloatingActionButton(
             onPressed: () async {
-              await _saveTableProducts();
-              if (!mounted) return;
-              // ignore: use_build_context_synchronously
-              Navigator.of(context).pop();
+              try {
+                await _saveTableProducts();
+                widget.onCompleted();
+                Navigator.of(rootContext!).pop();
+              } catch (e) {
+                ScaffoldMessenger.of(rootContext!).showSnackBar(
+                  SnackBar(content: Text(e.toString())),
+                );
+              }
             },
             heroTag: 'save_order',
             child: const Icon(Icons.check),

@@ -15,5 +15,7 @@
         public short OccupiedQty { get; set; } = 0;
         public IEnumerable<string>? Option1 { get; set; } = new List<string> { "Mặc định" };
         public IEnumerable<ProductPrice>? Prices { get; set; }
+        public string? Option1Value { get; set; }
+        public ProductPrice? SelectedPrice { get; set; }
     }
 }

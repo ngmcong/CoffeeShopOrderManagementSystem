@@ -7,11 +7,11 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        public static List<Product> products = new List<Product>();
+        public static List<Product> Products = new List<Product>();
         public async Task<IEnumerable<Product>> Load()
         {
-            products = new List<Product>();
-            products.AddRange(new List<Product> {
+            Products = new List<Product>();
+            Products.AddRange(new List<Product> {
                 new Product {
                     Id = 0,
                     Name = "Phin sữa",
@@ -142,7 +142,7 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
                 },
             });
             await Task.CompletedTask;
-            return products;
+            return Products;
         }
     }
 }

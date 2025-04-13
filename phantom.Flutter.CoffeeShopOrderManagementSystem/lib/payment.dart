@@ -32,7 +32,7 @@ class _PaymentPageState extends State<PaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payment'),
+        title: const Text('Thanh toán'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -40,7 +40,7 @@ class _PaymentPageState extends State<PaymentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Total Amount: \$100.00',
+              'Tổng tiền cần thanh toán: 122.000 VNĐ',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
@@ -48,7 +48,7 @@ class _PaymentPageState extends State<PaymentPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Pay Amount:',
+                  'Số tiền được nhận:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
@@ -56,7 +56,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   child: TextField(
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: '\$100.00',
+                      hintText: '122.000 VNĐ',
                     ),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
@@ -68,29 +68,29 @@ class _PaymentPageState extends State<PaymentPage> {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Select Payment Method:',
+              'Hình thức:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             ListTile(
-              title: const Text('Credit Card'),
+              title: const Text('Cà thẻ'),
               leading: Radio<String>(
-                value: 'Credit Card',
+                value: 'Cà thẻ',
                 groupValue: _selectedPaymentMethod,
                 onChanged: _onPaymentMethodChanged,
               ),
             ),
             ListTile(
-              title: const Text('PayPal'),
+              title: const Text('Momo'),
               leading: Radio<String>(
-                value: 'PayPal',
+                value: 'Momo',
                 groupValue: _selectedPaymentMethod,
                 onChanged: _onPaymentMethodChanged,
               ),
             ),
             ListTile(
-              title: const Text('Cash'),
+              title: const Text('Tiền mặt'),
               leading: Radio<String>(
-                value: 'Cash',
+                value: 'Tiền mặt',
                 groupValue: _selectedPaymentMethod,
                 onChanged: _onPaymentMethodChanged,
               ),
@@ -99,7 +99,7 @@ class _PaymentPageState extends State<PaymentPage> {
             Center(
               child: ElevatedButton(
                 onPressed: _processPayment,
-                child: const Text('Pay Now'),
+                child: const Text('Thanh toán'),
               ),
             ),
           ],

@@ -34,6 +34,7 @@ class _ProductSelectionDialogState extends State<ProductSelectionDialog> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 8.0,
                   mainAxisSpacing: 8.0,
+                  childAspectRatio: 0.8,
                 ),
                 itemCount: widget.items.length,
                 itemBuilder: (context, index) {

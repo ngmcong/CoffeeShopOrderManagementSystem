@@ -101,7 +101,7 @@ class _OrderState extends State<Order> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Details'),
+        title: const Text('Danh sách món ăn'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

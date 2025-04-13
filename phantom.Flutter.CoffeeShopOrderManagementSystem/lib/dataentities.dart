@@ -30,7 +30,7 @@ class ProductPrice {
       throw Exception('Failed to parse product price');
     }
   }
-  
+
   toJson() {
     return {
       'id': id,
@@ -110,10 +110,21 @@ class ShopTable {
   ShopTable({required this.id, required this.name});
 
   static Future<ShopTable> fromJson(item) async {
-    return ShopTable(
+    var itemModel = ShopTable(
       id: item['id'],
       name: item['name'],
     );
+    switch (item['status']) {
+      case 0:
+        itemModel.status = ShopTableStatus.available;
+        break;
+      case 2:
+        itemModel.status = ShopTableStatus.reserved;
+        break;
+      default:
+        itemModel.status = ShopTableStatus.occupied;
+    }
+    return itemModel;
   }
 }
 

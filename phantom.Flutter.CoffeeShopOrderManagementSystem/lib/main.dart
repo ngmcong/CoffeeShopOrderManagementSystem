@@ -35,9 +35,9 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orangeAccent),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'COFFEE SHOP ORDER MANAGEMENT SYSTEM'),
     );
   }
 }
@@ -174,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),
                             Text(
-                              'Status: ${table.status == ShopTableStatus.available ? 'Available' : 'Occupied'}',
+                              'TT: ${table.status == ShopTableStatus.available ? 'Trống' : 'Đang sử dụng'}',
                               style: TextStyle(
                                 color: table.status == ShopTableStatus.available
                                     ? Colors.green

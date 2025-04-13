@@ -71,31 +71,31 @@ class _DetailPageState extends State<DetailPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          // Text(
+          //   widget.shopTable != null
+          //       ? 'Tên: ${widget.shopTable!.name}'
+          //       : 'No table selected',
+          //   style: const TextStyle(fontSize: 20),
+          // ),
           Text(
-            widget.shopTable != null
-                ? 'Name: ${widget.shopTable!.name}'
-                : 'No table selected',
-            style: const TextStyle(fontSize: 20),
+            'TT: ${widget.shopTable!.status == ShopTableStatus.available ? 'Trống' : 'Đang sử dụng'}',
+            style: TextStyle(
+              fontSize: 16,
+              color: widget.shopTable!.status == ShopTableStatus.available
+                  ? Colors.green
+                  : Colors.red,
+            ),
           ),
-          const SizedBox(height: 10),
-          Text(
-            widget.shopTable != null
-                ? 'Status: ${widget.shopTable!.status}'
-                : 'Status unavailable',
-            style: const TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 10),
           Text(
             orderItems != null && orderItems!.isNotEmpty
-                ? 'Total Quantity: ${orderItems!.fold(0.0, (sum, item) => sum + item.qty).toStringAsFixed(0)}'
-                : 'Total Quantity: 0',
+                ? 'Tổng số mặt hàng: ${orderItems!.fold(0.0, (sum, item) => sum + item.qty).toStringAsFixed(0)}'
+                : 'Tổng số mặt hàng: 0',
             style: const TextStyle(fontSize: 16),
           ),
-          const SizedBox(height: 10),
           Text(
             orderItems != null && orderItems!.isNotEmpty
-                ? 'Total Amount: ${numberFormat.format(orderItems!.fold(0.0, (sum, item) => sum + (item.qty * (item.selectedPrice?.price ?? 0))))} VNĐ'
-                : 'Total Amount: 0 VNĐ',
+                ? 'Tổng tiền: ${numberFormat.format(orderItems!.fold(0.0, (sum, item) => sum + (item.qty * (item.selectedPrice?.price ?? 0))))} VNĐ'
+                : 'Tổng tiền: 0 VNĐ',
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
@@ -107,6 +107,7 @@ class _DetailPageState extends State<DetailPage> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
+                      childAspectRatio: 0.8,
                     ),
                     itemCount: orderItems!.length,
                     itemBuilder: (context, index) {

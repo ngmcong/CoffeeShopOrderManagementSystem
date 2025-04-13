@@ -24,7 +24,7 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
                 _tables = new List<ShopTable>();
                 for (short i = 1; i <= 10; i++)
                 {
-                    _tables.Add(new ShopTable { Id = Convert.ToInt16(i - 1), Name = $"Table {i}" });
+                    _tables.Add(new ShopTable { Id = Convert.ToInt16(i - 1), Name = $"Bàn {i}" });
                 }
             }
             await Task.CompletedTask;

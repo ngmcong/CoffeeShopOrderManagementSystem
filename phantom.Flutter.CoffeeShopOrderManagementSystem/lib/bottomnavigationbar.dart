@@ -10,7 +10,8 @@ BottomNavigationBar CustomBottomNavigationBar({bool isEnabledOrder = false}) {
         label: 'Home',
       ),
       BottomNavigationBarItem(
-        icon: isEnabledOrder ? const Icon(Icons.menu_book) : const Icon(Icons.menu_book, color: Colors.grey),
+        // icon: isEnabledOrder ? const Icon(Icons.menu_book) : const Icon(Icons.menu_book, color: Colors.grey),
+        icon: const Icon(Icons.menu_book),
         label: 'Order',
       ),
       const BottomNavigationBarItem(
@@ -19,8 +20,8 @@ BottomNavigationBar CustomBottomNavigationBar({bool isEnabledOrder = false}) {
       ),
     ],
     currentIndex: 0, // Set the current selected index
-    selectedItemColor: Colors.deepPurple,
-    unselectedItemColor: Colors.deepPurple,
+    selectedItemColor: Colors.orangeAccent,
+    unselectedItemColor: Colors.orangeAccent,
     onTap: (int index) {
       // Handle button tap
       switch (index) {

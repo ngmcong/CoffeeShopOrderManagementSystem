@@ -137,57 +137,62 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // Number of columns
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                ),
-                itemCount: tables?.length ?? 0, // Number of tables
-                itemBuilder: (context, index) {
-                  final table = tables![index];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedItem = table;
-                      });
-                    },
-                    child: Card(
-                      elevation: 4,
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    DetailPage(shopTable: table),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3, // Number of columns
+                    crossAxisSpacing: 20.0,
+                    mainAxisSpacing: 20.0,
+                  ),
+                  itemCount: tables?.length ?? 0, // Number of tables
+                  itemBuilder: (context, index) {
+                    final table = tables![index];
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedItem = table;
+                        });
+                      },
+                      child: Card(
+                        elevation: 4,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailPage(shopTable: table),
+                                ),
+                              );
+                            });
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(table.name,
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 8),
+                              Text(
+                                'TT: ${table.status == ShopTableStatus.available ? 'Trống' : 'Đang sử dụng'}',
+                                style: TextStyle(
+                                  color:
+                                      table.status == ShopTableStatus.available
+                                          ? Colors.green
+                                          : Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            );
-                          });
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(table.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 8),
-                            Text(
-                              'TT: ${table.status == ShopTableStatus.available ? 'Trống' : 'Đang sử dụng'}',
-                              style: TextStyle(
-                                color: table.status == ShopTableStatus.available
-                                    ? Colors.green
-                                    : Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ],

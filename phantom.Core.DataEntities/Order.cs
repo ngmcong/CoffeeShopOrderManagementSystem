@@ -17,5 +17,6 @@
         public DateTime? Date;
         public List<Product>? Products;
         public string? SessionId;
+        public string? TableName { get; set; }
     }
 }

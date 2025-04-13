@@ -54,24 +54,26 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
             _connection.On<string, string>("ReceiveMessage", (user, message) =>
             {
                 // This method is called by the server
-                //Dispatcher.Invoke(() => // Ensure UI updates happen on the UI thread
-                //{
-                //    messagesList.Items.Add($"{user}: {message}");
-                //});
-                //CurrentDataContext.Initialize();
+                Dispatcher.Invoke(() => // Ensure UI updates happen on the UI thread
+                {
+                    if (MainContentControl.DataContext is UCOrderViewModel)
+                    {
+                        (MainContentControl.DataContext as UCOrderViewModel)!.Initialize();
+                    }
+                });
             });
 
-            _connection.Closed += async (error) =>
-            {
-                //Dispatcher.Invoke(() =>
-                //{
-                //    connectionStatus.Text = "Disconnected";
-                //    connectButton.IsEnabled = true;
-                //    sendButton.IsEnabled = false;
-                //});
-                //await Task.Delay(new Random().Next(0, 5) * 1000);
-                //await ConnectAsync();
-            };
+            //_connection.Closed += async (error) =>
+            //{
+            //    //Dispatcher.Invoke(() =>
+            //    //{
+            //    //    connectionStatus.Text = "Disconnected";
+            //    //    connectButton.IsEnabled = true;
+            //    //    sendButton.IsEnabled = false;
+            //    //});
+            //    //await Task.Delay(new Random().Next(0, 5) * 1000);
+            //    //await ConnectAsync();
+            //};
 
             await ConnectAsync();
         }
@@ -81,8 +83,8 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
             InitializeComponent();
             this.DataContext = this;
             InitializeSignalR();
-            MainContentControl = new UCTableView();
-            ((MainContentControl as UCTableView).DataContext as UCTableViewModel).Initialize();
+            MainContentControl = new UCOrderView();
+            (MainContentControl.DataContext! as UCOrderViewModel)!.Initialize();
         }
 
         override protected void OnClosing(System.ComponentModel.CancelEventArgs e)

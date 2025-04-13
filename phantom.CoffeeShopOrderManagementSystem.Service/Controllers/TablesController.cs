@@ -52,12 +52,17 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             return outModels;
         }
 
+        public async Task<IEnumerable<Order>> LoadOrders()
+        {
+            await Task.CompletedTask;
+            return _orders;
+        }
+
         private string Base64Decode(string base64EncodedData)
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
-
         [HttpPost("{tableId}")]
         public async Task<APIRetVal> OccupiedAndOrderning(short tableId, [FromBody] IEnumerable<Product> products
             , [FromQuery] string employee)
@@ -89,7 +94,7 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
                     order = new Order
                     {
                         Id = oId + 1,
-                        Code = $"{nowDate.ToString("dd")}{(_orders!.Count(x => x.Date == nowDate) + 1).ToString("{0:000}")}",
+                        Code = $"{nowDate.ToString("dd")}{(_orders!.Count(x => x.Date == nowDate) + 1).ToString("000")}",
                         Date = nowDate,
                         Employee = employee,
                         Status = OrderStatus.New,

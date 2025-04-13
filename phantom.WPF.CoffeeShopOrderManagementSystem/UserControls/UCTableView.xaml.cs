@@ -40,18 +40,10 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem.UserControls
 
         public void Initialize()
         {
-            string? coffeeShopAddress = ConfigurationManager.ConnectionStrings["CoffeeShopAddress"]?.ConnectionString;
-            if (coffeeShopAddress == null)
-            {
-                // Handle the null case appropriately, e.g., log an error or throw an exception  
-                throw new InvalidOperationException("Connection string 'YourDatabaseName' is not configured.");
-            }
-            RestfulHelper restfulHelper = new RestfulHelper();
-            restfulHelper.BaseUrl = coffeeShopAddress;
 #if DEBUG
             Thread.Sleep(1000); // Simulate a delay for debugging purposes
 #endif
-            var tables = restfulHelper.GetAysnc<IEnumerable<ShopTable>>("tables/load");
+            var tables = Globals.RestfulHelper.GetAysnc<IEnumerable<ShopTable>>("tables/load");
             Tables = new ObservableCollection<ShopTable>(tables!);
         }
     }

@@ -12,7 +12,7 @@
         public short Id { get; set; } = 0;
         public string? Name { get; set; }
         public ShopTableStatus Status { get; set; } = ShopTableStatus.Available;
-        public short Order = 0;
+        public short Order { get; set; } = 0;
         public string? SessionId;
     }
 }

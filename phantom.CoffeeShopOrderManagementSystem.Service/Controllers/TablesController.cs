@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using phantom.CoffeeShopOrderManagementSystem.DataEntities;
 
 namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
@@ -7,15 +8,24 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
     [ApiController]
     public class TablesController : ControllerBase
     {
+        private readonly IHubContext<OrderHub> _hubContext; // Replace ChatHub with your Hub class
+        public TablesController(IHubContext<OrderHub> hubContext)
+        {
+            _hubContext = hubContext;
+        }
+
         private static List<ShopTable> _tables = new List<ShopTable>();
         private static List<Order> _orders = new List<Order>();
 
         public async Task<IEnumerable<ShopTable>> Load()
         {
-            _tables = new List<ShopTable>();
-            for (short i = 1; i <= 10; i++)
+            if (_tables == null || _tables.Count == 0)
             {
-                _tables.Add(new ShopTable { Id = Convert.ToInt16(i - 1), Name = $"Table {i}" });
+                _tables = new List<ShopTable>();
+                for (short i = 1; i <= 10; i++)
+                {
+                    _tables.Add(new ShopTable { Id = Convert.ToInt16(i - 1), Name = $"Table {i}" });
+                }
             }
             await Task.CompletedTask;
             return _tables;
@@ -105,9 +115,10 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
                                    return model;
                                }).ToList();
 
-
-
             await Task.CompletedTask;
+
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", "User", "Đã có cập nhật đặt món");
+
             return new APIRetVal();
         }
     }

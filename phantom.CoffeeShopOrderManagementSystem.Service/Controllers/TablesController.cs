@@ -15,7 +15,7 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
         }
 
         private static List<ShopTable> _tables = new List<ShopTable>();
-        private static List<Order> _orders = new List<Order>();
+        private static List<Order>? _orders = new List<Order>();
         private static List<Payment> _payment = new List<Payment>();
 
         public async Task<IEnumerable<ShopTable>> Load()
@@ -41,6 +41,7 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             var products = _orders.Where(x => x.TableId == tableId && x.SessionId == table!.SessionId).SelectMany(x => x.Products!);
             var outModels = (from p in products
                              join dp in ProductsController.Products on p.Id equals dp.Id
+                             where p.Qty > 0
                              select new { p, dp }).Select(x =>
                              {
                                  var model = x.dp;
@@ -67,6 +68,10 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             return _orders.Where(x => x.Status == OrderStatus.New && x.TableId == tableId)?.SelectMany(x => x.Products!);
         }
 
+        private bool IsEqualOrderProduct(Product p1, Product p2)
+        {
+            return p1.Id == p2.Id && p1.Option1Value == p2.Option1Value && p1.SelectedPrice?.Price == p2.SelectedPrice?.Price;
+        }
         private string Base64Decode(string base64EncodedData)
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
@@ -92,42 +97,83 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             table.Order = Convert.ToInt16(_tables!.Max(t => t.Order) + 1);
             _tables!.Where(t => t.Status == ShopTableStatus.Orderning).OrderBy(t => t.Order).Select((t, i) => t.Order = Convert.ToInt16(i + 1)).ToList();
 
-            var order = _orders.FirstOrDefault(x => x.TableId == tableId && x.Employee == employee && x.Status == OrderStatus.New
-                && x.SessionId == table.SessionId);
-            if (order == null)
+
+            // Edit order items
+            if (products.Any(x => x.Qty < 0))
             {
                 lock (_orders)
                 {
-                    var nowDate = DateTime.Now.Date;
-                    var oId = _orders?.Count() == 0 ? 0 : _orders!.Max(x => x.Id);
-                    order = new Order
+                    var currentOrders = _orders.Where(x => x.Status == OrderStatus.New
+                        && x.SessionId == table.SessionId).ToList();
+                    var editProducts = products.Where(x => x.Qty < 0).ToList();
+                    while (editProducts!.Count() > 0)
                     {
-                        Id = oId + 1,
-                        Code = $"{nowDate.ToString("dd")}{(_orders!.Count(x => x.Date == nowDate) + 1).ToString("000")}",
-                        Date = nowDate,
-                        Employee = employee,
-                        Status = OrderStatus.New,
-                        TableId = tableId,
-                        SessionId = table.SessionId,
-                    };
-                    _orders!.Add(order);
+                        var item = editProducts.FirstOrDefault()!;
+                        var order = currentOrders.FirstOrDefault(x => x.Products!.Any(p => p.Qty > 0 && IsEqualOrderProduct(p, item)));
+                        if (order == null)
+                        {
+                            throw new Exception("Không tìm thấy dữ liệu thực hiện.");
+                        }
+                        var product = order.Products!.FirstOrDefault(x => x.Qty > 0 && IsEqualOrderProduct(x, item));
+                        if (product == null)
+                        {
+                            throw new Exception("Không tìm thấy dữ liệu thực hiện.");
+                        }
+                        var minQty = Convert.ToInt16(Math.Min(product.Qty, -1 * item.Qty));
+                        product.Qty -= minQty;
+                        item.Qty += minQty;
+                        if (item.Qty == 0)
+                        {
+                            editProducts.Remove(item);
+                        }
+                    }
+                    var emptyOrders = currentOrders.Where(x => x.Products!.All(p => p.Qty == 0)).ToList();
+                    foreach (var order in emptyOrders)
+                    {
+                        order.Status = OrderStatus.Done;
+                    }
                 }
             }
-            if (order!.Products == null) order!.Products = new List<Product>();
-            order!.Products!.AddRange(products);
-            var grp = from p in order!.Products
-                      group p by new { p.Id, p.Option1Value, p.SelectedPrice?.Price } into gp
-                      select new { gp.Key.Id, gp.Key.Option1Value, gp.Key.Price, Qty = gp.Sum(x => x.Qty) };
-            order!.Products = (from gp in grp
-                               join p in ProductsController.Products on gp.Id equals p.Id
-                               select new { p, gp }).Select(x =>
-                               {
-                                   var model = x.p;
-                                   model.Qty = Convert.ToInt16(x.gp.Qty);
-                                   model.Option1Value = x.gp.Option1Value;
-                                   model.SelectedPrice = x.p.Prices!.FirstOrDefault(c => c.Price == x.gp.Price);
-                                   return model;
-                               }).ToList();
+            // Add new order
+            if (products.Any(x => x.Qty > 0))
+            {
+                var order = _orders.FirstOrDefault(x => x.TableId == tableId && x.Employee == employee && x.Status == OrderStatus.New
+                    && x.SessionId == table.SessionId);
+                if (order == null)
+                {
+                    lock (_orders)
+                    {
+                        var nowDate = DateTime.Now.Date;
+                        var oId = _orders?.Count() == 0 ? 0 : _orders!.Max(x => x.Id);
+                        order = new Order
+                        {
+                            Id = oId + 1,
+                            Code = $"{nowDate.ToString("dd")}{(_orders!.Count(x => x.Date == nowDate) + 1).ToString("000")}",
+                            Date = nowDate,
+                            Employee = employee,
+                            Status = OrderStatus.New,
+                            TableId = tableId,
+                            SessionId = table.SessionId,
+                        };
+                        _orders!.Add(order);
+                    }
+                }
+                if (order!.Products == null) order!.Products = new List<Product>();
+                order!.Products!.AddRange(products.Where(x => x.Qty > 0));
+                var grp = from p in order!.Products
+                          group p by new { p.Id, p.Option1Value, p.SelectedPrice?.Price } into gp
+                          select new { gp.Key.Id, gp.Key.Option1Value, gp.Key.Price, Qty = gp.Sum(x => x.Qty) };
+                order!.Products = (from gp in grp
+                                   join p in ProductsController.Products on gp.Id equals p.Id
+                                   select new { p, gp }).Select(x =>
+                                   {
+                                       var model = x.p;
+                                       model.Qty = Convert.ToInt16(x.gp.Qty);
+                                       model.Option1Value = x.gp.Option1Value;
+                                       model.SelectedPrice = x.p.Prices!.FirstOrDefault(c => c.Price == x.gp.Price);
+                                       return model;
+                                   }).ToList();
+            }
 
             await Task.CompletedTask;
 

@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using phantom.CoffeeShopOrderManagementSystem.DataEntities;
 
 namespace phantom.WPF.CoffeeShopOrderManagementSystem.UserControls
@@ -14,6 +15,20 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem.UserControls
             InitializeComponent();
             this.DataContext = CurrentDataContext;
             this.CurrentDataContext.Order = order;
+        }
+
+        private async void CompleteOrder_Clicked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            try
+            {
+
+                await Globals.RestfulHelper.PostAsync($"tables/CompleteOrder", CurrentDataContext!.Order!.Id);
+                Globals.LoadUCOrderView();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 

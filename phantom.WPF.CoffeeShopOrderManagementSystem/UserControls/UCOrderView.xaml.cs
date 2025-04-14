@@ -53,8 +53,9 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem.UserControls
             Orders = new ObservableCollection<Order>(orders);
         }
 
-        public void OnOrderClicked(Order order)
+        public async void OnOrderClicked(Order order)
         {
+            await Globals.RestfulHelper.PostAsync($"tables/InProgressOrder", order.Id);
             Globals.MainWindow!.MainContentControl = new UCProgressOrder(order: order);
         }
     }

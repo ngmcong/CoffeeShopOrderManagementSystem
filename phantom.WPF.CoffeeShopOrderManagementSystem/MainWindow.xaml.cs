@@ -98,8 +98,7 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
             this.DataContext = this;
             InitializeSignalR();
             Globals.MainWindow = this;
-            MainContentControl = new UCOrderView();
-            (MainContentControl.DataContext! as UCOrderViewModel)!.Initialize();
+            Globals.LoadUCOrderView();
         }
 
         override protected void OnClosing(System.ComponentModel.CancelEventArgs e)

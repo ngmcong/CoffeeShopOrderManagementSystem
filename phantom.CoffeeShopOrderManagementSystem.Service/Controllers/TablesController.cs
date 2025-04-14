@@ -14,31 +14,38 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             _hubContext = hubContext;
         }
 
-        private static List<ShopTable> _tables = new List<ShopTable>();
-        private static List<Order> _orders = new List<Order>();
+        private static List<ShopTable>? _shopTables;
+        public static List<ShopTable> ShopTables
+        {
+            get
+            {
+                if (_shopTables == null)
+                {
+                    _shopTables = new List<ShopTable>();
+                    for (short i = 1; i <= 10; i++)
+                    {
+                        _shopTables.Add(new ShopTable { Id = Convert.ToInt16(i - 1), Name = $"Bàn {i}" });
+                    }
+                }
+                return _shopTables!;
+            }
+        }
+        public static List<Order> Orders = new List<Order>();
         private static List<Payment> _payment = new List<Payment>();
 
         public async Task<IEnumerable<ShopTable>> Load()
         {
-            if (_tables == null || _tables.Count == 0)
-            {
-                _tables = new List<ShopTable>();
-                for (short i = 1; i <= 10; i++)
-                {
-                    _tables.Add(new ShopTable { Id = Convert.ToInt16(i - 1), Name = $"Bàn {i}" });
-                }
-            }
             await Task.CompletedTask;
-            return _tables;
+            return ShopTables;
         }
 
         [HttpGet("{tableId}")]
         public async Task<IEnumerable<Product>?> LoadProducts(short tableId)
         {
-            if ((_tables?.Count() > 0) == false) await Load();
-            var table = _tables!.FirstOrDefault(x => x.Id == tableId);
+            if ((ShopTables?.Count() > 0) == false) await Load();
+            var table = ShopTables!.FirstOrDefault(x => x.Id == tableId);
             var nowDate = DateTime.Now.Date;
-            var products = _orders.Where(x => x.TableId == tableId && x.SessionId == table!.SessionId).SelectMany(x => x.Products!);
+            var products = Orders.Where(x => x.TableId == tableId && x.SessionId == table!.SessionId).SelectMany(x => x.Products!);
             var outModels = (from p in products
                              join dp in ProductsController.Products on p.Id equals dp.Id
                              where p.Qty > 0
@@ -58,14 +65,14 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
         public async Task<IEnumerable<Order>> LoadOrders()
         {
             await Task.CompletedTask;
-            return _orders.Where(x => x.Status == OrderStatus.New);
+            return Orders.Where(x => x.Status == OrderStatus.New);
         }
 
         [HttpGet("{tableId}")]
         public async Task<IEnumerable<Product>?> LoadOrderProducts(short tableId)
         {
             await Task.CompletedTask;
-            return _orders.Where(x => x.Status == OrderStatus.New && x.TableId == tableId)?.SelectMany(x => x.Products!);
+            return Orders.Where(x => x.Status == OrderStatus.New && x.TableId == tableId)?.SelectMany(x => x.Products!);
         }
 
         private bool IsEqualOrderProduct(Product p1, Product p2)
@@ -86,24 +93,24 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             {
                 return new APIRetVal { Code = 1, Message = "Không đủ thông tin cần thiết" };
             }
-            if ((_tables?.Count() > 0) == false) await Load();
-            var table = _tables!.FirstOrDefault(t => t.Id == tableId)!;
+            if ((ShopTables?.Count() > 0) == false) await Load();
+            var table = ShopTables!.FirstOrDefault(t => t.Id == tableId)!;
             if (table.Status == ShopTableStatus.Available || table.Status == ShopTableStatus.Reserved)
             {
                 var guid = Guid.NewGuid().ToString().Replace("-", "");
                 table.SessionId = guid;
             }
             table.Status = ShopTableStatus.Orderning;
-            table.Order = Convert.ToInt16(_tables!.Max(t => t.Order) + 1);
-            _tables!.Where(t => t.Status == ShopTableStatus.Orderning).OrderBy(t => t.Order).Select((t, i) => t.Order = Convert.ToInt16(i + 1)).ToList();
+            table.Order = Convert.ToInt16(ShopTables!.Max(t => t.Order) + 1);
+            ShopTables!.Where(t => t.Status == ShopTableStatus.Orderning).OrderBy(t => t.Order).Select((t, i) => t.Order = Convert.ToInt16(i + 1)).ToList();
 
 
             // Edit order items
             if (products.Any(x => x.Qty < 0))
             {
-                lock (_orders)
+                lock (Orders)
                 {
-                    var currentOrders = _orders.Where(x => x.Status == OrderStatus.New
+                    var currentOrders = Orders.Where(x => x.Status == OrderStatus.New
                         && x.SessionId == table.SessionId).ToList();
                     var editProducts = products.Where(x => x.Qty < 0).ToList();
                     while (editProducts!.Count() > 0)
@@ -137,25 +144,25 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             // Add new order
             if (products.Any(x => x.Qty > 0))
             {
-                var order = _orders.FirstOrDefault(x => x.TableId == tableId && x.Employee == employee && x.Status == OrderStatus.New
+                var order = Orders.FirstOrDefault(x => x.TableId == tableId && x.Employee == employee && x.Status == OrderStatus.New
                     && x.SessionId == table.SessionId);
                 if (order == null)
                 {
-                    lock (_orders)
+                    lock (Orders)
                     {
                         var nowDate = DateTime.Now.Date;
-                        var oId = _orders?.Count() == 0 ? 0 : _orders!.Max(x => x.Id);
+                        var oId = Orders?.Count() == 0 ? 0 : Orders!.Max(x => x.Id);
                         order = new Order
                         {
                             Id = oId + 1,
-                            Code = $"{nowDate.ToString("dd")}{(_orders!.Count(x => x.Date == nowDate) + 1).ToString("000")}",
+                            Code = $"{nowDate.ToString("dd")}{(Orders!.Count(x => x.Date == nowDate) + 1).ToString("000")}",
                             Date = nowDate,
                             Employee = employee,
                             Status = OrderStatus.New,
                             TableId = tableId,
                             SessionId = table.SessionId,
                         };
-                        _orders!.Add(order);
+                        Orders!.Add(order);
                     }
                 }
                 if (order!.Products == null) order!.Products = new List<Product>();
@@ -175,19 +182,20 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
                                    }).ToList();
             }
 
-            await Task.CompletedTask;
+            Globals.SaveOrdersToFile();
 
             await _hubContext.Clients.All.SendAsync("ReceiveMessage", "User", "Đã có cập nhật đặt món");
 
+            await Task.CompletedTask;
             return new APIRetVal();
         }
 
         [HttpPost("{tableId}")]
         public async Task<APIRetVal> Payment(short tableId, [FromBody] string employee)
         {
-            var table = _tables.FirstOrDefault(x => x.Id == tableId && x.Status != ShopTableStatus.Available);
+            var table = ShopTables.FirstOrDefault(x => x.Id == tableId && x.Status != ShopTableStatus.Available);
             if (table == null) return new APIRetVal { Code = 1, Message = "Không tìm thấy dữ liệu thanh toán." };
-            var orders = _orders.Where(x => x.SessionId == table.SessionId);
+            var orders = Orders.Where(x => x.SessionId == table.SessionId);
             if ((orders?.Count() > 0) == false || orders.Any(x => x.Status != OrderStatus.Done)) return new APIRetVal { Code = 1, Message = "Tồn tại món chưa được giao." };
 
             lock (orders)
@@ -204,20 +212,38 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             table.SessionId = null;
             table.Status = ShopTableStatus.Available;
 
+            Globals.SaveOrdersToFile();
+
             await Task.CompletedTask;
             return new APIRetVal();
         }
 
-        [HttpGet("{orderId}")]
-        public async Task CompleteOrder(int orderId)
+        [HttpPost]
+        public async Task CompleteOrder([FromBody] int orderId)
         {
-            lock (_orders)
+            lock (Orders)
             {
-                var order = _orders.FirstOrDefault(x => x.Id == orderId && x.Status != OrderStatus.Done);
+                var order = Orders.FirstOrDefault(x => x.Id == orderId && x.Status != OrderStatus.Done);
                 if (order == null) throw new Exception("Không tìm thấy dữ liệu thực hiện.");
                 order.Status = OrderStatus.Done;
             }
             await Task.CompletedTask;
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", "User", "Đã hoàn tất phiếu gói món");
+            Globals.SaveOrdersToFile();
+        }
+
+        [HttpPost]
+        public async Task InProgressOrder([FromBody] int orderId)
+        {
+            lock (Orders)
+            {
+                var order = Orders.FirstOrDefault(x => x.Id == orderId && x.Status != OrderStatus.Done);
+                if (order == null) throw new Exception("Không tìm thấy dữ liệu thực hiện.");
+                order.Status = OrderStatus.Progress;
+            }
+            await Task.CompletedTask;
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", "User", "Đã hoàn tất phiếu gói món");
+            Globals.SaveOrdersToFile();
         }
     }
     public class APIRetVal

@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using phantom.Core.Restful;
+using phantom.WPF.CoffeeShopOrderManagementSystem.UserControls;
 
 namespace phantom.WPF.CoffeeShopOrderManagementSystem
 {
@@ -31,5 +32,10 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
             }
         }
         public static MainWindow? MainWindow;
+        public static void LoadUCOrderView()
+        {
+            MainWindow!.MainContentControl = new UCOrderView();
+            (MainWindow.MainContentControl.DataContext! as UCOrderViewModel)!.Initialize();
+        }
     }
 }

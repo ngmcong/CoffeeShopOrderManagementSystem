@@ -153,7 +153,7 @@ class APIRetVal {
   }
 }
 
-void GoHomePage() {
+void goHomePage() {
   Navigator.pushAndRemoveUntil(
     rootContext!,
     MaterialPageRoute(builder: (context) => MyHomePage(title: title)),

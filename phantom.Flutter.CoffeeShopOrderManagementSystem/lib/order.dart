@@ -10,8 +10,13 @@ import 'package:http/http.dart' as http;
 class Order extends StatefulWidget {
   final ShopTable? shopTable;
   final void Function() onCompleted;
+  final bool isEditing;
 
-  const Order({super.key, this.shopTable, required this.onCompleted});
+  const Order(
+      {super.key,
+      this.shopTable,
+      required this.onCompleted,
+      this.isEditing = false});
 
   @override
   State<Order> createState() => _OrderState();
@@ -97,6 +102,48 @@ class _OrderState extends State<Order> {
     }
   }
 
+  Future<List<Product>?> _fetchProductsBody(String body) async {
+    final List<dynamic> data = jsonDecode(body);
+    var products =
+        await Future.wait(data.map((item) async => Product.fromJson(item)));
+    return products;
+  }
+
+  Future<List<Product>?> _fetchOrderedProducts() async {
+    final url = Uri.parse(
+        '$httpAddress/tables/loadOrderProducts/${widget.shopTable!.id}');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        return await _fetchProductsBody(response.body);
+      } else {
+        throw Exception(
+            'Failed to load ordered products with code: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching products: $e');
+      }
+    }
+    return null;
+  }
+
+  List<Product>? backup = [];
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isEditing) {
+      _fetchOrderedProducts().then((products) {
+        setState(() {
+          orderItems = products;
+          _fetchProductsBody(jsonEncode(products)).then((value) {
+            backup = value;
+          });
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,7 +193,8 @@ class _OrderState extends State<Order> {
                               icon: const Icon(Icons.remove),
                               onPressed: () {
                                 setState(() {
-                                  if (product!.qty > 1) {
+                                  if (product!.qty > 1 ||
+                                      (widget.isEditing && product.qty == 1)) {
                                     product.qty--;
                                   }
                                 });

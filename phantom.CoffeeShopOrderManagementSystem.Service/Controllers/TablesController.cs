@@ -53,10 +53,18 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
             return outModels;
         }
 
+        [HttpGet]
         public async Task<IEnumerable<Order>> LoadOrders()
         {
             await Task.CompletedTask;
-            return _orders;
+            return _orders.Where(x => x.Status == OrderStatus.New);
+        }
+
+        [HttpGet("{tableId}")]
+        public async Task<IEnumerable<Product>?> LoadOrderProducts(short tableId)
+        {
+            await Task.CompletedTask;
+            return _orders.Where(x => x.Status == OrderStatus.New && x.TableId == tableId)?.SelectMany(x => x.Products!);
         }
 
         private string Base64Decode(string base64EncodedData)

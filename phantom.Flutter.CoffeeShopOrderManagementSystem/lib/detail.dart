@@ -160,6 +160,25 @@ class _DetailPageState extends State<DetailPage> {
                     onCompleted: () {
                       _loadProducts();
                     },
+                    isEditing: true,
+                  ),
+                ),
+              );
+            },
+            heroTag: 'edit',
+            child: const Icon(Icons.edit),
+          ),
+          const SizedBox(width: 16.0),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Order(
+                    shopTable: widget.shopTable,
+                    onCompleted: () {
+                      _loadProducts();
+                    },
                   ),
                 ),
               );

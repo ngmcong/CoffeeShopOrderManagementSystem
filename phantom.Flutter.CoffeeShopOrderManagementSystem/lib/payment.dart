@@ -39,7 +39,7 @@ class _PaymentPageState extends State<PaymentPage> {
           }
         }
         if (responseBody.code != 0) throw Exception(responseBody.message);
-        GoHomePage();
+        goHomePage();
       } else {
         throw Exception('Failed to save table products');
       }

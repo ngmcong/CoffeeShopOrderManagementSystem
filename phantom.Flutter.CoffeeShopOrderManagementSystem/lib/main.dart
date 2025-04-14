@@ -188,8 +188,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   fontSize: 12,
                                   color:
                                       table.status == ShopTableStatus.available
-                                          ? Color(0xFF776655)
-                                          : Color(0xFFA0522D),
+                                          ? const Color(0xFF776655)
+                                          : const Color(0xFFA0522D),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

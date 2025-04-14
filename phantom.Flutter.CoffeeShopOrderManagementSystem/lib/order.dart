@@ -80,11 +80,28 @@ class _OrderState extends State<Order> {
     final url = Uri.parse(
         '$httpAddress/tables/OccupiedAndOrderning/${widget.shopTable!.id}?employee=$employeeName'); // Replace with your API endpoint
     try {
+      var models = await _fetchProductsBody(jsonEncode(orderItems));
+      if (widget.isEditing && backup?.isNotEmpty == true) {
+        for (var e in backup!) {
+          if (models!.any((p) =>
+              p.id == e.id &&
+              p.option1Value == e.option1Value &&
+              p.selectedPrice?.price == e.selectedPrice?.price)) {
+            models
+                .firstWhere((p) =>
+                    p.id == e.id &&
+                    p.option1Value == e.option1Value &&
+                    p.selectedPrice?.price == e.selectedPrice?.price)
+                .qty -= e.qty;
+          }
+        }
+      }
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body:
-            jsonEncode(orderItems?.map((product) => product.toJson()).toList()),
+        body: jsonEncode(models
+            ?.map((product) => product.toJson())
+            .toList()), // Convert the list of products to JSON
       );
       if (response.statusCode == 200) {
         var responseBody = APIRetVal.fromJson(jsonDecode(response.body));
@@ -188,7 +205,7 @@ class _OrderState extends State<Order> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Số lượng: '),
+                            const Text('Số lượng: '),
                             IconButton(
                               icon: const Icon(Icons.remove),
                               onPressed: () {

@@ -94,6 +94,10 @@ class Product {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'name': name,
+      'prices': prices?.map((price) => price.toJson()).toList(),
+      'imageUrl': imageUrl,
+      'option1': option1,
       'qty': qty,
       'option1Value': option1Value,
       'selectedPrice': selectedPrice?.toJson(),
@@ -157,6 +161,7 @@ void goHomePage() {
   Navigator.pushAndRemoveUntil(
     rootContext!,
     MaterialPageRoute(builder: (context) => MyHomePage(title: title)),
-    (Route<dynamic> route) => false, // This predicate always returns false, removing all previous routes
+    (Route<dynamic> route) =>
+        false, // This predicate always returns false, removing all previous routes
   );
 }

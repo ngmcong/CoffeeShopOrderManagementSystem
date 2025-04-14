@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 // ignore: non_constant_identifier_names
 BottomNavigationBar CustomBottomNavigationBar({bool isEnabledOrder = false}) {
   return BottomNavigationBar(
-    items: <BottomNavigationBarItem>[
-      const BottomNavigationBarItem(
+    items: const <BottomNavigationBarItem>[
+      BottomNavigationBarItem(
         icon: Icon(Icons.home),
         label: 'Home',
       ),
       BottomNavigationBarItem(
         // icon: isEnabledOrder ? const Icon(Icons.menu_book) : const Icon(Icons.menu_book, color: Colors.grey),
-        icon: const Icon(Icons.menu_book),
+        icon: Icon(Icons.menu_book),
         label: 'Order',
       ),
-      const BottomNavigationBarItem(
+      BottomNavigationBarItem(
         icon: Icon(Icons.settings),
         label: 'Settings',
       ),

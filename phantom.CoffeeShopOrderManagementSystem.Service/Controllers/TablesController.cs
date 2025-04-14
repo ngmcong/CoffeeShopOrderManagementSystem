@@ -15,7 +15,7 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service.Controllers
         }
 
         private static List<ShopTable> _tables = new List<ShopTable>();
-        private static List<Order>? _orders = new List<Order>();
+        private static List<Order> _orders = new List<Order>();
         private static List<Payment> _payment = new List<Payment>();
 
         public async Task<IEnumerable<ShopTable>> Load()

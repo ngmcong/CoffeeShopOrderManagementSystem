@@ -40,13 +40,13 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem.UserControls
             OnOrderPrepareButtonClickCommand = new OrderPrepareButtonClickCommand(this);
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
 #if DEBUG
             Thread.Sleep(1000); // Simulate a delay for debugging purposes
 #endif
-            var orders = Globals.RestfulHelper.GetAysnc<IEnumerable<Order>>("tables/loadOrders")?.ToList() ?? new List<Order>();
-            _tables = _tables ?? Globals.RestfulHelper.GetAysnc<IEnumerable<ShopTable>>("tables/load");
+            var orders = (await Globals.RestfulHelper.GetAysnc<IEnumerable<Order>>("tables/loadOrders"))?.ToList() ?? new List<Order>();
+            _tables = _tables ?? await Globals.RestfulHelper.GetAysnc<IEnumerable<ShopTable>>("tables/load");
             (from o in orders
              join t in _tables! on o.TableId equals t.Id
              select new { o, t }).ToList().ForEach(x => x.o.TableName = x.t.Name);

@@ -38,12 +38,12 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem.UserControls
         {
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
 #if DEBUG
             Thread.Sleep(1000); // Simulate a delay for debugging purposes
 #endif
-            var tables = Globals.RestfulHelper.GetAysnc<IEnumerable<ShopTable>>("tables/load");
+            var tables = await Globals.RestfulHelper.GetAysnc<IEnumerable<ShopTable>>("tables/load");
             Tables = new ObservableCollection<ShopTable>(tables!);
         }
     }

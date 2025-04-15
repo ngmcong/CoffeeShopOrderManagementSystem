@@ -68,11 +68,11 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
             _connection.On<string, string>("ReceiveMessage", (user, message) =>
             {
                 // This method is called by the server
-                Dispatcher.Invoke(() => // Ensure UI updates happen on the UI thread
+                Dispatcher.Invoke(async () => // Ensure UI updates happen on the UI thread
                 {
                     if (MainContentControl!.DataContext is UCOrderViewModel)
                     {
-                        (MainContentControl.DataContext as UCOrderViewModel)!.Initialize();
+                        await (MainContentControl.DataContext as UCOrderViewModel)!.Initialize();
                     }
                 });
             });

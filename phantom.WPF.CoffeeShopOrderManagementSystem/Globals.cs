@@ -32,10 +32,10 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
             }
         }
         public static MainWindow? MainWindow;
-        public static void LoadUCOrderView()
+        public static async void LoadUCOrderView()
         {
             MainWindow!.MainContentControl = new UCOrderView();
-            (MainWindow.MainContentControl.DataContext! as UCOrderViewModel)!.Initialize();
+            await (MainWindow.MainContentControl.DataContext! as UCOrderViewModel)!.Initialize();
         }
     }
 }

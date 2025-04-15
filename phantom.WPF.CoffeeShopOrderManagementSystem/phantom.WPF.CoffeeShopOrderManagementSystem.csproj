@@ -10,11 +10,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.15" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\phantom.Core.Restful\phantom.Core.Restful.csproj" />
+    <ProjectReference Include="..\..\phantom.Core.Restful\src\phantom.Core.Restful.csproj" />
     <ProjectReference Include="..\phantom.Core.DataEntities\phantom.Core.DataEntities.csproj" />
   </ItemGroup>
 

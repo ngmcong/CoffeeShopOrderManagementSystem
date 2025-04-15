@@ -1,4 +1,5 @@
-﻿using phantom.CoffeeShopOrderManagementSystem.Service.Controllers;
+﻿using System.Text.Json;
+using phantom.CoffeeShopOrderManagementSystem.Service.Controllers;
 
 namespace phantom.CoffeeShopOrderManagementSystem.Service
 {
@@ -12,7 +13,7 @@ namespace phantom.CoffeeShopOrderManagementSystem.Service
                 using (var fileStream = new FileStream(Globals.OrderFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 using (var streamWriter = new StreamWriter(fileStream))
                 {
-                    streamWriter.Write(Newtonsoft.Json.JsonConvert.SerializeObject(TablesController.Orders));
+                    streamWriter.Write(JsonSerializer.Serialize(TablesController.Orders));
                     streamWriter.Close();
                     streamWriter.Dispose();
                     fileStream.Close();

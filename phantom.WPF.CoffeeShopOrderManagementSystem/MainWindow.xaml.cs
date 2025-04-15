@@ -70,7 +70,7 @@ namespace phantom.WPF.CoffeeShopOrderManagementSystem
                 // This method is called by the server
                 Dispatcher.Invoke(() => // Ensure UI updates happen on the UI thread
                 {
-                    if (MainContentControl.DataContext is UCOrderViewModel)
+                    if (MainContentControl!.DataContext is UCOrderViewModel)
                     {
                         (MainContentControl.DataContext as UCOrderViewModel)!.Initialize();
                     }

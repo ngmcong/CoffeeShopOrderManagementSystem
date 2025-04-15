@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "phantom.CoffeeShopOrderMana
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "phantom.Core.DataEntities", "phantom.Core.DataEntities\phantom.Core.DataEntities.csproj", "{E3D7326D-B02E-4D97-A38E-B8720335EEC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "phantom.Core.Restful", "..\phantom.Core.Restful\src\phantom.Core.Restful.csproj", "{0BA0EC0A-27F6-FC0B-C8DB-40CF93B355D7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,10 +26,6 @@ Global
 		{E3D7326D-B02E-4D97-A38E-B8720335EEC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3D7326D-B02E-4D97-A38E-B8720335EEC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3D7326D-B02E-4D97-A38E-B8720335EEC7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0BA0EC0A-27F6-FC0B-C8DB-40CF93B355D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0BA0EC0A-27F6-FC0B-C8DB-40CF93B355D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0BA0EC0A-27F6-FC0B-C8DB-40CF93B355D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0BA0EC0A-27F6-FC0B-C8DB-40CF93B355D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
